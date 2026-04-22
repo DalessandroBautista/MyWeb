@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+      args:
+        VARIANT: "20-bullseye"
+    volumes:
+      - .:/workspace:cached
+    working_dir: /workspace
+    ports:
+      - "5173:5173"
+      - "4000:4000"
+    user: node
+    command: /bin/sh -c "while sleep 1000; do :; done"
