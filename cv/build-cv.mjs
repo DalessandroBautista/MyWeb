@@ -95,18 +95,6 @@ li::marker { color: var(--accent); }
     .join('\n')}
 </section>
 
-<section>
-  <h2>${esc(d.labels.projects)}</h2>
-  ${d.projects
-    .map(
-      (p) => `<div class="item project">
-    <div class="item-head"><span class="item-title">${esc(p.name)}</span>${link(p.url).replace('<a ', '<a class="url" ')}</div>
-    <p>${esc(p.text)}</p>
-    <div class="stack">${esc(p.stack)}</div>
-  </div>`,
-    )
-    .join('\n')}
-</section>
 
 <div class="two">
   <section>

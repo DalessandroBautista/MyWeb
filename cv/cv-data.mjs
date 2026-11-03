@@ -22,13 +22,12 @@ export const cv = {
       profile: 'Perfil',
       skills: 'Tecnologías',
       experience: 'Experiencia',
-      projects: 'Proyectos personales',
       education: 'Formación',
       languages: 'Idiomas',
       portfolio: 'Portfolio',
     },
     profile:
-      'Desarrollador Java Fullstack con más de 4 años de experiencia en el desarrollo, mantenimiento y modernización de aplicaciones empresariales críticas de alcance nacional, vinculadas a control, fiscalización y trazabilidad agroalimentaria. Trabajo con Java 11/17, Spring Boot, Hibernate/JPA, Oracle, React y TypeScript, en todo el ciclo de desarrollo: análisis y diseño, code review, testing, despliegue y soporte post-implementación. Por fuera del trabajo diseño, construyo y opero productos web propios en producción.',
+      'Desarrollador Java Fullstack con más de 4 años de experiencia en el desarrollo, mantenimiento y modernización de aplicaciones empresariales críticas de alcance nacional, vinculadas a control, fiscalización y trazabilidad agroalimentaria. Trabajo con Java 11/17, Spring Boot, Hibernate/JPA, Oracle, React y TypeScript, en todo el ciclo de desarrollo: análisis y diseño, code review, testing, despliegue y soporte post-implementación. Por fuera del trabajo diseño, construyo y opero productos web propios en producción (ver portfolio).',
     skills: [
       ['Backend', 'Java 11/17 · Spring Boot · Hibernate/JPA · Maven · APIs REST · JHipster · Node.js (Fastify)'],
       ['Frontend', 'React · TypeScript · Next.js · Vue.js · HTML · CSS'],
@@ -55,26 +54,6 @@ export const cv = {
         ],
       },
     ],
-    projects: [
-      {
-        name: 'Copa del Pueblo',
-        url: 'https://copadelpueblo.com.ar',
-        stack: 'Next.js · React · TypeScript · PostgreSQL · Vitest · Playwright',
-        text: 'Juego de cartas por turnos del fútbol argentino, en producción. Motor de reglas determinista y versionado, CPU con IA heurística, replay jugada a jugada, constructor de mazos y autenticación de usuarios.',
-      },
-      {
-        name: 'Qué Hay',
-        url: 'https://quehaylp.com',
-        stack: 'React · TypeScript · Fastify · Postgres · Drizzle ORM · Leaflet',
-        text: 'Agenda colaborativa de eventos y salidas en La Plata, en producción. Mapa interactivo, filtros por fecha, lugar y presupuesto, publicación de eventos y login con Google OAuth.',
-      },
-      {
-        name: 'Portfolio interactivo',
-        url: contact.portfolio,
-        stack: 'React · Vite · Canvas API · GitHub Pages',
-        text: 'Portfolio navegable en lancha entre islas de proyectos, con render 2D y pixel art, rutas con historial y accesibilidad por teclado.',
-      },
-    ],
     education: [
       {
         title: 'Licenciatura en Sistemas',
@@ -97,13 +76,12 @@ export const cv = {
       profile: 'Profile',
       skills: 'Skills',
       experience: 'Experience',
-      projects: 'Personal projects',
       education: 'Education',
       languages: 'Languages',
       portfolio: 'Portfolio',
     },
     profile:
-      'Java Full Stack Developer with 4+ years of experience building, maintaining and modernizing critical nationwide enterprise applications for agri-food control, inspection and traceability. I work with Java 11/17, Spring Boot, Hibernate/JPA, Oracle, React and TypeScript across the full development lifecycle: analysis and design, code review, testing, deployment and post-release support. Outside work, I design, build and run my own web products in production.',
+      'Java Full Stack Developer with 4+ years of experience building, maintaining and modernizing critical nationwide enterprise applications for agri-food control, inspection and traceability. I work with Java 11/17, Spring Boot, Hibernate/JPA, Oracle, React and TypeScript across the full development lifecycle: analysis and design, code review, testing, deployment and post-release support. Outside work, I design, build and run my own web products in production (see portfolio).',
     skills: [
       ['Backend', 'Java 11/17 · Spring Boot · Hibernate/JPA · Maven · REST APIs · JHipster · Node.js (Fastify)'],
       ['Frontend', 'React · TypeScript · Next.js · Vue.js · HTML · CSS'],
@@ -128,26 +106,6 @@ export const cv = {
           'Migrated repositories from SVN to Git/GitLab, preserving history, versioning strategy and development branches.',
           'JasperReports reporting; analysis, design, code review, testing, deployments and post-release support with technical and business teams (Scrum, Jira).',
         ],
-      },
-    ],
-    projects: [
-      {
-        name: 'Copa del Pueblo',
-        url: 'https://copadelpueblo.com.ar',
-        stack: 'Next.js · React · TypeScript · PostgreSQL · Vitest · Playwright',
-        text: 'Turn-based Argentine football card game, live in production. Deterministic, versioned rules engine, heuristic AI opponent, play-by-play replay, deck builder and user authentication.',
-      },
-      {
-        name: 'Qué Hay',
-        url: 'https://quehaylp.com',
-        stack: 'React · TypeScript · Fastify · Postgres · Drizzle ORM · Leaflet',
-        text: 'Community events and nightlife guide for La Plata, live in production. Interactive map, filters by date, venue and budget, event publishing and Google OAuth sign-in.',
-      },
-      {
-        name: 'Interactive portfolio',
-        url: contact.portfolio,
-        stack: 'React · Vite · Canvas API · GitHub Pages',
-        text: 'Portfolio you explore by boat across project islands, with 2D and pixel-art rendering, history-aware routes and keyboard accessibility.',
       },
     ],
     education: [
