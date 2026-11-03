@@ -1,6 +1,8 @@
 name: Deploy a GitHub Pages
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -28,10 +30,8 @@ jobs:
       - name: Instalar dependencias
         run: npm ci
 
-      - name: Build para project page /MyWeb/
+      - name: Build para el sitio de usuario (base /)
         run: npm run build
-        env:
-          VITE_BASE_PATH: /MyWeb/
 
       - name: Configurar Pages
         uses: actions/configure-pages@v5
