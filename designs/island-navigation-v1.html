@@ -1,0 +1,72 @@
+<section id="island-portfolio" aria-label="Portfolio navegable entre islas">
+  <style>
+    #island-portfolio{--ink:#fff4df;--muted:#b9d3ce;--coral:#ff806f;--deep:#073b4a;font-family:Georgia,'Times New Roman',serif;color:var(--ink);background:linear-gradient(180deg,#26224a,#073b4a 55%,#062e3b);padding:clamp(18px,4vw,44px);overflow:hidden}
+    #island-portfolio *{box-sizing:border-box}#island-portfolio .wrap{max-width:1040px;margin:auto}
+    #island-portfolio .eyebrow{font:600 11px/1.2 system-ui,sans-serif;letter-spacing:.22em;text-transform:uppercase;color:#ffb28e}
+    #island-portfolio h1{font-size:clamp(25px,4vw,39px);font-weight:400;letter-spacing:.01em;margin:9px 0 6px}
+    #island-portfolio .intro{margin:0 0 22px;color:#c2d9d4;font:14px/1.5 system-ui,sans-serif}
+    #island-portfolio canvas{display:block;width:100%;aspect-ratio:16/9;background:#125263;image-rendering:pixelated;box-shadow:0 16px 48px #020e1c66;}
+    #island-portfolio .controls{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0 12px;border-bottom:1px solid #ffffff26;font:13px system-ui,sans-serif}
+    #island-portfolio .nav{display:flex;gap:8px}#island-portfolio button{font:600 13px system-ui,sans-serif;color:var(--ink);background:#ffffff12;border:1px solid #ffffff3b;padding:10px 14px;cursor:pointer}
+    #island-portfolio button:hover:not(:disabled){background:#ff806f;color:#162a3a}#island-portfolio button:focus-visible{outline:2px solid #ffd174;outline-offset:3px}#island-portfolio button:disabled{opacity:.38;cursor:not-allowed}
+    #island-portfolio .count{font-variant-numeric:tabular-nums;color:#ffd8bd;white-space:nowrap}
+    #island-portfolio .pause{display:flex;align-items:center;gap:8px;color:#c2d9d4;font:12px system-ui,sans-serif}#island-portfolio .pause input{accent-color:#ff806f}
+    #island-portfolio .detail{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:18px 0 2px;font-family:system-ui,sans-serif}
+    #island-portfolio .detail h2{font:400 21px Georgia,serif;margin:0 0 5px;color:#fff0dd}#island-portfolio .detail p{margin:0;color:#bed5d2;font-size:13px;line-height:1.5;max-width:620px}
+    #island-portfolio .detail a{color:#ffae91;text-decoration-thickness:1px;text-underline-offset:4px;font-size:13px;white-space:nowrap}
+    @media(max-width:560px){#island-portfolio{padding:20px 14px}.controls{flex-wrap:wrap}#island-portfolio .detail{align-items:flex-start;flex-direction:column;gap:8px}}
+    @media(prefers-reduced-motion:reduce){#island-portfolio canvas{scroll-behavior:auto}}
+  </style>
+  <div class="wrap">
+    <div class="eyebrow">Bitácora de proyectos · La Plata</div>
+    <h1>Bautista Dalessandro</h1>
+    <p class="intro">Tres paradas, una lancha y un atardecer largo. Navegá con las flechas.</p>
+    <canvas width="800" height="450" role="img" aria-label="Escena pixel art de una lancha navegando entre islas tropicales al atardecer"></canvas>
+    <div class="controls">
+      <div class="nav"><button type="button" data-prev aria-label="Ir a la isla anterior">← Anterior</button><button type="button" data-next aria-label="Ir a la isla siguiente">Siguiente →</button></div>
+      <span class="count" aria-live="polite"></span>
+      <label class="pause"><input type="checkbox" data-pause> Pausar movimiento ambiental</label>
+    </div>
+    <article class="detail" aria-live="polite"><div><h2></h2><p></p></div><a></a></article>
+  </div>
+  <script>
+  (()=>{
+    const root=document.getElementById('island-portfolio'); if(!root)return;
+    const canvas=root.querySelector('canvas'),ctx=canvas.getContext('2d'),prev=root.querySelector('[data-prev]'),next=root.querySelector('[data-next]'),count=root.querySelector('.count'),title=root.querySelector('.detail h2'),desc=root.querySelector('.detail p'),link=root.querySelector('.detail a'),pause=root.querySelector('[data-pause]');
+    const stops=[{name:'00 · Inicio',short:'BAUTISTA DALESSANDRO',desc:'Desarrollador en La Plata. Construyo productos digitales con curiosidad y oficio.',url:'https://github.com/DalessandroBautista',label:'Ver GitHub'}, {name:'01 · Qué Hay',short:'QUÉ HAY',desc:'Una guía viva para descubrir eventos y planes cerca tuyo.',url:'https://quehaylp.com',label:'Visitar quehaylp.com'}, {name:'02 · Copa del Pueblo',short:'COPA DEL PUEBLO',desc:'Fútbol, comunidad y juego en una copa hecha para el pueblo.',url:'https://copadelpueblo.com.ar',label:'Visitar copadelpueblo.com.ar'}];
+    const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;let index=0,moving=false,progress=0,from=0,to=0,last=0,time=0,paused=false,cameraX=0;
+    function update(){title.textContent=stops[index].name;desc.textContent=stops[index].desc;link.href=stops[index].url;link.textContent=stops[index].label;count.textContent=`${String(index).padStart(2,'0')} / 02`;prev.disabled=index===0||moving;next.disabled=index===2||moving}
+    function go(dir){if(moving||index+dir<0||index+dir>=stops.length)return;from=index;to=index+dir;if(reduced){index=to;cameraX=to*760;update();return}moving=true;progress=0;update()}
+    prev.addEventListener('click',()=>go(-1));next.addEventListener('click',()=>go(1));pause.addEventListener('change',()=>paused=pause.checked);
+    root.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'||e.key==='ArrowRight'){if(e.target.matches('button,input,a'))return;e.preventDefault();go(e.key==='ArrowRight'?1:-1)}});
+    function rect(x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h))}
+    function island(x,y,s,kind){ctx.save();ctx.translate(x,y);ctx.scale(s,s);rect(-75,0,150,18,'#35515a');rect(-66,-7,132,12,'#d8a06a');rect(-53,-13,106,9,'#f3cb87');
+      for(let i=0;i<4;i++){let px=-45+i*30;ctx.strokeStyle='#604b42';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(px,-8);ctx.quadraticCurveTo(px-7,-25,px+4,-40);ctx.stroke();ctx.fillStyle='#176957';ctx.beginPath();ctx.ellipse(px-2,-43,17,5,-.25,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(px+7,-48,15,4,.25,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(px-5,-53,12,4,-.35,0,Math.PI*2);ctx.fill()}
+      // timber pier
+      rect(38,-8,34,4,'#855d4b');for(let p=0;p<4;p++)rect(44+p*9,-5,3,11,'#604b42');
+      if(kind===1){rect(-18,-31,48,24,'#e76663');rect(-22,-37,56,8,'#ffb676');rect(-10,-24,7,17,'#fff0c3');rect(2,-24,7,17,'#fff0c3');rect(-37,-56,90,10,'#202a48');ctx.fillStyle='#fff1dc';ctx.font='bold 8px monospace';ctx.textAlign='center';ctx.fillText('QUÉ HAY',8,-48)}
+      if(kind===2){rect(-28,-32,56,23,'#287c83');rect(-34,-39,68,7,'#ec8070');rect(-20,-26,40,13,'#183a4a');rect(-9,-25,3,11,'#f5f0cf');rect(5,-25,3,11,'#f5f0cf');rect(-37,-56,90,10,'#202a48');ctx.fillStyle='#fff1dc';ctx.font='bold 7px monospace';ctx.textAlign='center';ctx.fillText('COPA DEL PUEBLO',8,-48);rect(49,-24,12,17,'#ffb45f');rect(52,-21,6,6,'#52c4b5')}
+      if(kind===0){rect(-20,-24,40,5,'#f3cb87');rect(-16,-34,4,12,'#fff0c3');rect(12,-31,5,10,'#fff0c3')}
+      ctx.restore()}
+    function boat(x,y,angle){ctx.save();ctx.translate(x,y);ctx.rotate(angle);rect(-28,7,54,9,'#f8eee0');rect(-22,3,38,6,'#ff806f');rect(-8,-9,20,13,'#e8d7c2');rect(-4,-14,13,6,'#8be0dd');rect(2,-20,4,7,'#57435a');rect(-1,-23,7,4,'#ffb46c');rect(18,0,4,8,'#fff');ctx.restore()}
+    function draw(ts){let dt=Math.min((ts-last)/1000,.05);last=ts;if(!paused&&!reduced)time+=dt;let t=time;
+      if(moving){progress=Math.min(1,progress+dt/2.4);let eased=progress<.5?4*progress*progress*progress:1-Math.pow(-2*progress+2,3)/2;cameraX=(from+(to-from)*eased)*760;if(progress>=1){moving=false;index=to;cameraX=index*760;update()}}
+      ctx.clearRect(0,0,800,450);let sky=ctx.createLinearGradient(0,0,0,230);sky.addColorStop(0,'#3a315e');sky.addColorStop(.62,'#d96f79');sky.addColorStop(1,'#ffb27c');ctx.fillStyle=sky;ctx.fillRect(0,0,800,230);
+      rect(0,231,800,219,'#075064');rect(0,225,800,8,'#f28c82');
+      // sunset and broken reflection
+      ctx.fillStyle='#ffd184';ctx.beginPath();ctx.arc(408,157,43,0,Math.PI*2);ctx.fill();for(let i=0;i<11;i++){let yy=208+i*7,w=28+(i%4)*12,x=393+Math.sin(t*1.7+i)*12;rect(x,yy,w,2,'#ffc27f')}
+      for(let i=0;i<5;i++){let x=(i*203-t*9)%900-40;rect(x,56+(i%2)*25,48,6,'#f8b9a1');rect(x+11,50+(i%2)*25,32,6,'#f8b9a1')}
+      // distant silhouettes and lively water ribbons
+      for(let i=0;i<6;i++){let x=(i*173-t*16)%900-40;rect(x,209+(i%3)*8,65,7,'#21616b');rect(x+22,194+(i%3)*8,3,18,'#20645e');rect(x+9,192+(i%3)*8,25,5,'#20645e')}
+      for(let row=0;row<13;row++){let y=255+row*15;for(let col=0;col<16;col++){let x=((col*64+(row%2)*24-t*(12+row))%860)-30,wig=Math.sin(t*2+col*.8+row)*4;rect(x,y+wig,22+(col%3)*8,2,row%3===0?'#38a9a2':'#187584')}}
+      const shift=cameraX;for(let i=0;i<stops.length;i++)island(115+i*760-shift,284,1,i);
+      // foam and palm-lit shoreline
+      for(let i=0;i<24;i++){let x=(i*39-t*18)%820;rect(x,278+Math.sin(t*3+i)*2,9,2,'#fff0cf')}
+      let bx=400,by=302+Math.sin(t*3)*3;ctx.save();if(moving&&to<from){ctx.translate(800,0);ctx.scale(-1,1)}boat(bx,by,moving?.04:Math.sin(t*2)*.035);ctx.restore();
+      if(moving){for(let i=0;i<18;i++){let x=to>from?365-i*8:435+i*8,y=317+Math.sin(t*7+i)*5;rect(x,y,3,2,i%2?'#8bd8ce':'#eaf3d5')}}
+      ctx.fillStyle='#fff0d5';ctx.font='bold 10px monospace';ctx.textAlign='center';ctx.fillText(stops[index].short,400,420);
+      requestAnimationFrame(draw)}
+    update();requestAnimationFrame(draw);
+  })();
+  </script>
+</section>

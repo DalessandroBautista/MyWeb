@@ -21,7 +21,8 @@
   --border-hover: rgba(255, 255, 255, 0.2);
 
   /* Typography Settings */
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Outfit Variable', 'Outfit', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Fraunces Variable', 'Fraunces', Georgia, serif;
   
   /* Transitions & Animations */
   --transition-fast: 0.15s ease-in-out;
