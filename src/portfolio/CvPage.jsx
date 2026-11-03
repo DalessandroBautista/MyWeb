@@ -11,6 +11,7 @@ export default function CvPage({
 }) {
   const h1Ref = useRef(null);
   const cvHref = `${baseUrl}${profile.cvUrl.replace(/^\//, '')}`;
+  const cvHrefEn = `${baseUrl}${(profile.cvUrlEn || '').replace(/^\//, '')}`;
   const personalProjects = (projects || defaultProjects).filter(
     (p) =>
       p.id !== 'inicio' &&
@@ -86,11 +87,21 @@ export default function CvPage({
         <div className="cv-actions-row no-print">
           <a
             href={cvHref}
-            download="CV_Bautista_DAlessandro.pdf"
+            download="Bautista_DAlessandro_CV.pdf"
             className="btn-primary-action"
           >
             Descargar CV (PDF) ↓
           </a>
+          {profile.cvUrlEn && (
+            <a
+              href={cvHrefEn}
+              download="Bautista_DAlessandro_Resume_EN.pdf"
+              className="btn-secondary-action"
+              hrefLang="en"
+            >
+              English resume (PDF) ↓
+            </a>
+          )}
           <button
             type="button"
             onClick={() => window.print()}

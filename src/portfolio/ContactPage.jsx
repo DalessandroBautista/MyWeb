@@ -61,6 +61,7 @@ export default function ContactPage({ profile, onBackToSea, onNavigateCv }) {
   };
 
   const cvHref = `${baseUrl}${profile.cvUrl.replace(/^\//, '')}`;
+  const cvHrefEn = `${baseUrl}${(profile.cvUrlEn || '').replace(/^\//, '')}`;
 
   return (
     <div className="page-container contact-page-view">
@@ -183,21 +184,31 @@ export default function ContactPage({ profile, onBackToSea, onNavigateCv }) {
           <header className="contact-card-header">
             <h2 className="contact-card-title">Currículum Vitae</h2>
             <span className="contact-card-value">
-              CV_Bautista_DAlessandro.pdf
+              {`${window.location.host}${baseUrl}${profile.cvUrl}`}
             </span>
           </header>
           <p className="contact-card-desc">
             Documento completo en PDF con experiencia en sistemas críticos,
-            formación académica y stack tecnológico.
+            formación académica, proyectos y stack tecnológico. Disponible en español e inglés.
           </p>
           <div className="contact-card-actions">
             <a
               href={cvHref}
-              download="CV_Bautista_DAlessandro.pdf"
+              download="Bautista_DAlessandro_CV.pdf"
               className="btn-primary-action"
             >
               Descargar CV (PDF) ↓
             </a>
+            {profile.cvUrlEn && (
+              <a
+                href={cvHrefEn}
+                download="Bautista_DAlessandro_Resume_EN.pdf"
+                className="btn-secondary-action"
+                hrefLang="en"
+              >
+                English (PDF) ↓
+              </a>
+            )}
             <a
               href="#cv"
               onClick={(e) => {

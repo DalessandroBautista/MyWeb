@@ -1,6 +1,6 @@
 // Contenido del portfolio insular.
 // Fuentes de datos:
-// - public/CV_Bautista_DAlessandro.pdf (extraído con pdftotext)
+// - cv/cv-data.mjs (fuente del CV en PDF: public/cv.pdf y public/cv-en.pdf, generados con `npm run cv`)
 // - Repositorio de sólo lectura Copa del Pueblo (/home/bautista/Documentos/Personal/duelo-del-pueblo)
 // - Repositorio de sólo lectura Qué Hay (/home/bautista/Documentos/Personal/ideas/agendaeventoslp-web)
 // - Sitios web públicos: https://copadelpueblo.com.ar y https://quehaylp.com
@@ -12,80 +12,63 @@ export const profile = {
   role: 'Desarrollador Java Fullstack',
   location: 'La Plata, Argentina',
   workLocation: 'Buenos Aires (modalidad híbrida)',
-  bio: 'Desarrollador Java Fullstack con más de 4 años de experiencia profesional y foco principal en desarrollo backend. Experiencia sólida en Java 11/17, Spring Boot y Maven, participando en sistemas críticos con impacto en la trazabilidad y control de alimentos. Orientado a calidad de código, buenas prácticas, trabajo en equipo y mejora continua. Experiencia en modernización y migración de sistemas, así como en dockerización y containerización para estandarizar entornos de desarrollo y despliegue. Actualmente cursando la Licenciatura en Sistemas en la UNLP.',
+  bio: 'Desarrollador Java Fullstack con más de 4 años de experiencia en el desarrollo, mantenimiento y modernización de aplicaciones empresariales críticas de alcance nacional, vinculadas a control, fiscalización y trazabilidad agroalimentaria. Trabajo con Java 11/17, Spring Boot, Hibernate/JPA, Oracle, React y TypeScript, en todo el ciclo de desarrollo: análisis y diseño, code review, testing, despliegue y soporte post-implementación. Por fuera del trabajo diseño, construyo y opero productos web propios en producción.',
   email: 'dalessandrobau@gmail.com',
   github: 'https://github.com/DalessandroBautista',
   linkedin: 'https://linkedin.com/in/bautistadalessandro',
-  cvUrl: 'CV_Bautista_DAlessandro.pdf',
+  cvUrl: 'cv.pdf',
+  cvUrlEn: 'cv-en.pdf',
   skills: [
     'Java 11/17',
     'Spring Boot',
-    'Maven',
-    'JHipster',
-    'ReactJS',
-    'VueJS',
-    'HTML',
-    'CSS',
+    'Hibernate/JPA',
+    'React',
     'TypeScript',
-    'Oracle SQL',
+    'Oracle',
+    'PostgreSQL',
     'Docker',
-    'Linux',
+    'Keycloak',
     'Git',
-    'Jira',
   ],
   skillGroups: [
-    {
-      category: 'Backend',
-      skills: ['Java 11/17', 'Spring Boot', 'Maven', 'JHipster'],
-    },
-    {
-      category: 'Frontend',
-      skills: ['ReactJS', 'VueJS', 'HTML', 'CSS', 'TypeScript'],
-    },
-    {
-      category: 'Base de datos',
-      skills: ['Oracle SQL'],
-    },
-    {
-      category: 'DevOps y herramientas',
-      skills: ['Git', 'Docker', 'Linux', 'Jira'],
-    },
-    {
-      category: 'Otros',
-      skills: ['Testing manual y automatizado', 'Metodologías ágiles'],
-    },
+    { category: 'Backend', skills: ['Java 11/17', 'Spring Boot', 'Hibernate/JPA', 'Maven', 'APIs REST', 'JHipster', 'Node.js (Fastify)'] },
+    { category: 'Frontend', skills: ['React', 'TypeScript', 'Next.js', 'Vue.js', 'HTML', 'CSS'] },
+    { category: 'Bases de datos', skills: ['Oracle', 'PostgreSQL', 'SQL'] },
+    { category: 'Infraestructura y seguridad', skills: ['Docker', 'Keycloak', 'Linux', 'WildFly', 'JBoss', 'Vercel'] },
+    { category: 'Integraciones', skills: ['REST', 'SOAP', 'JSON', 'OAuth'] },
+    { category: 'Herramientas', skills: ['Git', 'GitLab', 'SVN', 'Jira', 'JasperReports', 'Vitest', 'Playwright'] },
+    { category: 'Prácticas', skills: ['Scrum', 'Code review', 'Testing', 'Integración de sistemas', 'Modernización de legacy'] },
   ],
   experience: [
     {
-      role: 'Desarrollador Java Fullstack SSR',
+      role: 'Desarrollador Java Fullstack Semi Senior',
       organization:
         'SENASA · Servicio Nacional de Sanidad y Calidad Agroalimentaria',
       period: 'Diciembre 2021 – Actualidad',
       location: 'Buenos Aires (modalidad híbrida)',
       description:
-        'Desarrollo, mantenimiento y evolución de sistemas backend y frontend utilizados a nivel nacional con Java, Spring Boot, Oracle y ReactJS/VueJS, priorizando mantenibilidad y performance.',
+        'Desarrollo y modernización de aplicaciones críticas de alcance nacional con Java, Spring Boot, Oracle, React y TypeScript.',
       highlights: [
-        'Desarrollo, mantenimiento y evolución de sistemas backend y frontend utilizados a nivel nacional.',
-        'Implementación de funcionalidades en Java + Spring Boot + Oracle y ReactJS/VueJS, priorizando mantenibilidad y performance.',
-        'Participación en el ciclo completo de desarrollo: análisis, diseño, desarrollo, code review y despliegue.',
-        'Dockerización y containerización de aplicaciones y servicios para estandarizar entornos (dev/test) y facilitar despliegues.',
-        'Participación activa en procesos de modernización y migración tecnológica de sistemas legacy.',
-        'Coordinación directa con otros desarrolladores y áreas funcionales para el análisis, implementación y mantenimiento de funcionalidades, utilizando Jira como herramienta de gestión.',
+        'Desarrollo de funcionalidades y mantenimiento evolutivo de aplicaciones de uso nacional con Java 11/17, Spring Boot, Oracle SQL, React y TypeScript.',
+        'Implementación de reglas de negocio críticas para procesos de control, fiscalización, certificación y trazabilidad agroalimentaria.',
+        'Desarrollo y mantenimiento de APIs REST e integraciones entre sistemas, incluidos servicios legacy REST y SOAP.',
+        'Containerización de aplicaciones con Docker y autenticación y autorización centralizadas con Keycloak.',
+        'Modernización de aplicaciones Java legacy: actualización de dependencias, frameworks y servidores JBoss/WildFly.',
+        'Migración de repositorios de SVN a Git/GitLab, preservando historial, versionado y ramas de desarrollo.',
+        'Reportes con JasperReports; análisis, diseño, code review, testing, despliegues y soporte post-implementación junto a equipos técnicos y funcionales (Scrum, Jira).',
       ],
     },
   ],
   education: [
     {
-      title: 'Licenciatura en Sistemas (4º año)',
+      title: 'Licenciatura en Sistemas (4.º año)',
       organization: 'Universidad Nacional de La Plata (UNLP)',
       period: '2017 – En curso',
     },
   ],
   languages: [
-    {
-      language: 'Inglés',
-      level: 'Básico (lectura y escritura limitada)',
-    },
+    { language: 'Español', level: 'Nativo' },
+    { language: 'Inglés', level: 'Lectura de documentación técnica' },
   ],
 };
 

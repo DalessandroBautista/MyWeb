@@ -39,7 +39,7 @@ Los datos de perfil y proyectos viven en `src/portfolio/content.js`:
 
 - `profile`: nombre, rol, ubicación, bio, contacto, CV, skills, experiencia y
   educación. El CV se resuelve en la app como
-  `${import.meta.env.BASE_URL}CV_Bautista_DAlessandro.pdf`; en `content.js`
+  `${import.meta.env.BASE_URL}cv.pdf` (y `cv-en.pdf`); en `content.js`
   sólo se guarda el nombre del archivo, sin barra inicial.
 - `projects`: islas en orden de navegación. `inicio` (home), `que-hay`
   (agenda) y `copa-del-pueblo` (copa) son las únicas cargadas. Los repositorios
@@ -68,7 +68,7 @@ npm run preview   # sirve dist/ localmente
 ```
 
 Después de publicar, comprobá que `https://dalessandrobautista.github.io/` y
-`https://dalessandrobautista.github.io/CV_Bautista_DAlessandro.pdf` respondan
+`https://dalessandrobautista.github.io/cv.pdf` respondan
 sin 404. El PDF vive en `public/` y Vite lo copia a `dist/`.
 
 ## Estructura
@@ -83,3 +83,15 @@ src/styles/             estilos globales y variables
 docs/                   contrato de implementación y revisión de contenido
 designs/                referencias visuales e historial de diseño
 ```
+
+## CV en PDF
+
+El CV en español (`public/cv.pdf`) y en inglés (`public/cv-en.pdf`) se generan desde
+`cv/cv-data.mjs` con Chrome headless:
+
+```bash
+npm run cv
+```
+
+Editá el contenido en `cv/cv-data.mjs`, regenerá y commiteá los PDF. URLs públicas:
+`https://dalessandrobautista.github.io/cv.pdf` y `https://dalessandrobautista.github.io/cv-en.pdf`.

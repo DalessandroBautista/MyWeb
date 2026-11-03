@@ -334,6 +334,14 @@ export default function App() {
                 </a>
               )}
               {profile.email && <a href={`mailto:${profile.email}`}>Email</a>}
+              {profile.cvUrl && (
+                <a
+                  href={`${import.meta.env.BASE_URL}${profile.cvUrl}`}
+                  download="Bautista_DAlessandro_CV.pdf"
+                >
+                  CV ↓
+                </a>
+              )}
             </nav>
           </header>
 
@@ -521,6 +529,23 @@ export default function App() {
                   rel="noopener noreferrer"
                 >
                   GitHub ↗
+                </a>
+              )}
+              {profile.cvUrl && (
+                <a
+                  href={`${import.meta.env.BASE_URL}${profile.cvUrl}`}
+                  download="Bautista_DAlessandro_CV.pdf"
+                >
+                  CV en PDF ↓
+                </a>
+              )}
+              {profile.cvUrlEn && (
+                <a
+                  href={`${import.meta.env.BASE_URL}${profile.cvUrlEn}`}
+                  download="Bautista_DAlessandro_Resume_EN.pdf"
+                  hrefLang="en"
+                >
+                  Resume (EN) ↓
                 </a>
               )}
             </div>
