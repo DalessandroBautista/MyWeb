@@ -1,7 +1,8 @@
 // Genera public/cv.pdf (español) y public/cv-en.pdf (inglés) con Chrome headless.
 // Uso: npm run cv   (requiere google-chrome o CHROME_BIN)
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { cv } from './cv-data.mjs';
@@ -129,3 +130,11 @@ for (const d of Object.values(cv)) {
   ], { stdio: 'ignore' });
   console.info(`OK ${d.file}`);
 }
+
+// Versión para evitar que el navegador muestre un PDF viejo cacheado (?v=...).
+const hash = createHash('sha256');
+for (const d of Object.values(cv)) hash.update(readFileSync(join(root, 'public', d.file)));
+writeFileSync(
+  join(root, 'src', 'portfolio', 'cvVersion.js'),
+  `// Generado por npm run cv. No editar a mano.\nexport const cvVersion = '${hash.digest('hex').slice(0, 10)}';\n`,
+);

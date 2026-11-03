@@ -7,6 +7,8 @@
 // No inventar métricas, logros ni empleos que no estén respaldados por esas fuentes.
 // El CV se resuelve en la app con import.meta.env.BASE_URL; acá va sólo el nombre del archivo.
 
+import { cvVersion } from './cvVersion.js';
+
 export const profile = {
   name: "Bautista D'Alessandro",
   role: 'Desarrollador Java Fullstack',
@@ -16,8 +18,8 @@ export const profile = {
   email: 'dalessandrobau@gmail.com',
   github: 'https://github.com/DalessandroBautista',
   linkedin: 'https://linkedin.com/in/bautistadalessandro',
-  cvUrl: 'cv.pdf',
-  cvUrlEn: 'cv-en.pdf',
+  cvUrl: `cv.pdf?v=${cvVersion}`,
+  cvUrlEn: `cv-en.pdf?v=${cvVersion}`,
   skills: [
     'Java 11/17',
     'Spring Boot',

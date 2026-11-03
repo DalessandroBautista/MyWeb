@@ -184,7 +184,7 @@ export default function ContactPage({ profile, onBackToSea, onNavigateCv }) {
           <header className="contact-card-header">
             <h2 className="contact-card-title">Currículum Vitae</h2>
             <span className="contact-card-value">
-              {`${window.location.host}${baseUrl}${profile.cvUrl}`}
+              {`${window.location.host}${baseUrl}cv.pdf`}
             </span>
           </header>
           <p className="contact-card-desc">
