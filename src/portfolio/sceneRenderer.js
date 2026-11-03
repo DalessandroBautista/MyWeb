@@ -74,6 +74,180 @@ const PALETTE = {
   racingTurquoise: '#18c8b4'
 };
 
+// --- Typography & Deferred Text Helpers ---
+// Fuente monoespaciada en negrita nítida para modo Pixel, emparejada con la estética retro sin perder legibilidad.
+export const PIXEL_FONT_FAMILY =
+  'ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, "DejaVu Sans Mono", "Liberation Mono", monospace';
+
+export function resolveSceneFont(font, style) {
+  if (style !== 'pixel' || typeof font !== 'string') return font;
+  if (/system-ui|-apple-system|sans-serif/.test(font)) {
+    return font.replace(/(system-ui|-apple-system|sans-serif).*/, PIXEL_FONT_FAMILY);
+  }
+  const match = font.match(/^([\w\s]+?\d+(?:\.\d+)?px)\s+(.+)$/);
+  if (match) {
+    return `${match[1]} ${PIXEL_FONT_FAMILY}`;
+  }
+  return font;
+}
+
+export function drawSceneText(ctx, state, textOrOptions, x, y, maxWidth) {
+  if (!ctx) return;
+  const opts = typeof textOrOptions === 'object' && textOrOptions !== null
+    ? textOrOptions
+    : { text: textOrOptions, x, y, maxWidth };
+
+  const text = opts.text != null ? String(opts.text) : (opts.texto != null ? String(opts.texto) : '');
+  if (!text) return;
+
+  const posX = typeof opts.x === 'number' ? opts.x : 0;
+  const posY = typeof opts.y === 'number' ? opts.y : 0;
+  const maxW = typeof opts.maxWidth === 'number' ? opts.maxWidth : undefined;
+  const type = opts.type || 'fill';
+  const style = state?.style === 'pixel' ? 'pixel' : '2d';
+  const font = resolveSceneFont(opts.font || ctx.font, style);
+  const fillStyle = opts.fillStyle || ctx.fillStyle;
+  const strokeStyle = opts.strokeStyle || ctx.strokeStyle;
+  const lineWidth = typeof opts.lineWidth === 'number' ? opts.lineWidth : ctx.lineWidth;
+  const textAlign = opts.textAlign || ctx.textAlign;
+  const textBaseline = opts.textBaseline || ctx.textBaseline;
+
+  const shadow = opts.shadow || {
+    color: ctx.shadowColor,
+    blur: ctx.shadowBlur,
+    offsetX: ctx.shadowOffsetX,
+    offsetY: ctx.shadowOffsetY,
+  };
+
+  let transform = null;
+  if (typeof ctx.getTransform === 'function') {
+    const m = ctx.getTransform();
+    if (m) {
+      transform = { a: m.a, b: m.b, c: m.c, d: m.d, e: m.e, f: m.f };
+    }
+  }
+
+  // En modo pixel diferido, encolamos el texto para dibujarlo nítido sobre el canvas principal
+  if (style === 'pixel' && Array.isArray(state?.textQueue)) {
+    state.textQueue.push({
+      texto: text,
+      text,
+      x: posX,
+      y: posY,
+      maxWidth: maxW,
+      font,
+      fillStyle,
+      strokeStyle,
+      lineWidth,
+      textAlign,
+      textBaseline,
+      shadow,
+      shadowColor: shadow.color,
+      shadowBlur: shadow.blur,
+      shadowOffsetX: shadow.offsetX,
+      shadowOffsetY: shadow.offsetY,
+      transform,
+      type,
+    });
+    return;
+  }
+
+  // En modo 2D o fallback: renderizado directo
+  ctx.save();
+  if (font) ctx.font = font;
+  if (textAlign) ctx.textAlign = textAlign;
+  if (textBaseline) ctx.textBaseline = textBaseline;
+  if (fillStyle) ctx.fillStyle = fillStyle;
+  if (strokeStyle) ctx.strokeStyle = strokeStyle;
+  if (typeof lineWidth === 'number') ctx.lineWidth = lineWidth;
+  if (shadow && shadow.color && shadow.color !== 'transparent') {
+    ctx.shadowColor = shadow.color;
+    ctx.shadowBlur = shadow.blur || 0;
+    ctx.shadowOffsetX = shadow.offsetX || 0;
+    ctx.shadowOffsetY = shadow.offsetY || 0;
+  }
+  if (type === 'stroke') {
+    if (typeof maxW === 'number') {
+      ctx.strokeText(text, posX, posY, maxW);
+    } else {
+      ctx.strokeText(text, posX, posY);
+    }
+  } else {
+    if (typeof maxW === 'number') {
+      ctx.fillText(text, posX, posY, maxW);
+    } else {
+      ctx.fillText(text, posX, posY);
+    }
+  }
+  ctx.restore();
+}
+
+export function replayTextQueue(ctx, queue, scaleX = 1, scaleY = 1) {
+  if (!ctx || !Array.isArray(queue) || queue.length === 0) return;
+
+  for (let i = 0; i < queue.length; i++) {
+    const item = queue[i];
+    if (!item) continue;
+    const text = item.texto != null ? item.texto : item.text;
+    if (text == null || text === '') continue;
+
+    ctx.save();
+
+    // Componer la transformación del buffer con la escala buffer -> canvas
+    if (item.transform) {
+      const m = item.transform;
+      ctx.setTransform(
+        m.a * scaleX,
+        m.b * scaleY,
+        m.c * scaleX,
+        m.d * scaleY,
+        m.e * scaleX,
+        m.f * scaleY
+      );
+    } else {
+      ctx.setTransform(scaleX, 0, 0, scaleY, 0, 0);
+    }
+
+    if (item.font) ctx.font = item.font;
+    if (item.textAlign) ctx.textAlign = item.textAlign;
+    if (item.textBaseline) ctx.textBaseline = item.textBaseline;
+    if (item.fillStyle) ctx.fillStyle = item.fillStyle;
+    if (item.strokeStyle) ctx.strokeStyle = item.strokeStyle;
+    if (typeof item.lineWidth === 'number') ctx.lineWidth = item.lineWidth;
+
+    const shadow = item.shadow || {};
+    const shadowColor = item.shadowColor || shadow.color;
+    if (shadowColor && shadowColor !== 'transparent') {
+      ctx.shadowColor = shadowColor;
+      ctx.shadowBlur = typeof item.shadowBlur === 'number' ? item.shadowBlur : (shadow.blur || 0);
+      ctx.shadowOffsetX = typeof item.shadowOffsetX === 'number' ? item.shadowOffsetX : (shadow.offsetX || 0);
+      ctx.shadowOffsetY = typeof item.shadowOffsetY === 'number' ? item.shadowOffsetY : (shadow.offsetY || 0);
+    } else {
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+    }
+
+    const maxW = item.maxWidth;
+    if (item.type === 'stroke') {
+      if (typeof maxW === 'number') {
+        ctx.strokeText(text, item.x, item.y, maxW);
+      } else {
+        ctx.strokeText(text, item.x, item.y);
+      }
+    } else {
+      if (typeof maxW === 'number') {
+        ctx.fillText(text, item.x, item.y, maxW);
+      } else {
+        ctx.fillText(text, item.x, item.y);
+      }
+    }
+
+    ctx.restore();
+  }
+}
+
 // --- Layer 1: Sky & Solar Horizon ---
 function drawSkyAndSun(ctx, time, cameraX) {
   // Sunset linear gradient - extended to prevent empty borders on taller/wider views
@@ -811,7 +985,7 @@ function drawLandmarkHome(ctx, islandX, islandY, time, reducedMotion) {
 }
 
 // --- Specific Landmark 2: Agenda Island ("QUÉ HAY" Festival Pavilion & Kiosk) ---
-function drawLandmarkAgenda(ctx, islandX, islandY, time, reducedMotion) {
+function drawLandmarkAgenda(ctx, islandX, islandY, time, reducedMotion, state) {
   ctx.save();
   ctx.translate(islandX, islandY);
 
@@ -870,7 +1044,7 @@ function drawLandmarkAgenda(ctx, islandX, islandY, time, reducedMotion) {
   ctx.save();
   const signY = canopyTopY - 14;
   const agendaTitle = 'QUÉ HAY · EVENTOS';
-  ctx.font = '900 12px system-ui, sans-serif';
+  ctx.font = resolveSceneFont('900 12px system-ui, sans-serif', state?.style);
   const agendaMetrics = ctx.measureText(agendaTitle);
   const signW = Math.max(164, Math.ceil(agendaMetrics.width + 30));
   const signH = 24;
@@ -887,7 +1061,7 @@ function drawLandmarkAgenda(ctx, islandX, islandY, time, reducedMotion) {
   ctx.fillStyle = PALETTE.neonTeal;
   ctx.shadowColor = PALETTE.neonTeal;
   ctx.shadowBlur = reducedMotion ? 4 : 8 + Math.sin(time * 4) * 3;
-  ctx.fillText(agendaTitle, pavX, signY, signW - 16);
+  drawSceneText(ctx, state, agendaTitle, pavX, signY, signW - 16);
   ctx.restore();
 
   // Festoon Bistro String Lights across the front
@@ -970,7 +1144,7 @@ function drawLandmarkAgenda(ctx, islandX, islandY, time, reducedMotion) {
 }
 
 // --- Specific Landmark 3: Copa Island ("COPA DEL PUEBLO" Coastal Pitch & Stadium Lights) ---
-function drawLandmarkCopa(ctx, islandX, islandY, time, reducedMotion) {
+function drawLandmarkCopa(ctx, islandX, islandY, time, reducedMotion, state) {
   ctx.save();
   ctx.translate(islandX, islandY);
 
@@ -1126,7 +1300,7 @@ function drawLandmarkCopa(ctx, islandX, islandY, time, reducedMotion) {
   ctx.save();
   const signY = -94;
   const titleText = 'COPA DEL PUEBLO';
-  ctx.font = '900 12px system-ui, sans-serif';
+  ctx.font = resolveSceneFont('900 12px system-ui, sans-serif', state?.style);
   const textMetrics = ctx.measureText(titleText);
   const textW = textMetrics.width;
 
@@ -1193,7 +1367,7 @@ function drawLandmarkCopa(ctx, islandX, islandY, time, reducedMotion) {
   ctx.shadowColor = PALETTE.coralAccent;
   ctx.shadowBlur = reducedMotion ? 4 : 8 + Math.sin(time * 4) * 3;
   const maxTitleW = (signLeft + signW - 8) - textX;
-  ctx.fillText(titleText, textX, signY, maxTitleW);
+  drawSceneText(ctx, state, titleText, textX, signY, maxTitleW);
   ctx.restore();
 
   // Tropical palms framing Copa pitch
@@ -1204,7 +1378,7 @@ function drawLandmarkCopa(ctx, islandX, islandY, time, reducedMotion) {
 }
 
 // --- Specific Landmark 4: Code / Tech Workshop Island (Fallback & Additional Projects) ---
-function drawLandmarkCode(ctx, islandX, islandY, project, time, reducedMotion) {
+function drawLandmarkCode(ctx, islandX, islandY, project, time, reducedMotion, state) {
   ctx.save();
   ctx.translate(islandX, islandY);
 
@@ -1267,7 +1441,7 @@ function drawLandmarkCode(ctx, islandX, islandY, project, time, reducedMotion) {
   // Label sign
   ctx.save();
   const label = (project && project.title) ? project.title.toUpperCase() : 'DEV LAB';
-  ctx.font = 'bold 10px system-ui, sans-serif';
+  ctx.font = resolveSceneFont('bold 10px system-ui, sans-serif', state?.style);
   const labelMetrics = ctx.measureText(label);
   const codeSignW = Math.max(110, Math.ceil(labelMetrics.width + 24));
   const codeSignH = 18;
@@ -1282,7 +1456,7 @@ function drawLandmarkCode(ctx, islandX, islandY, project, time, reducedMotion) {
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillStyle = PALETTE.neonCyan;
-  ctx.fillText(label, labX, codeSignY, codeSignW - 12);
+  drawSceneText(ctx, state, label, labX, codeSignY, codeSignW - 12);
   ctx.restore();
 
   // Framing palms
@@ -1293,7 +1467,7 @@ function drawLandmarkCode(ctx, islandX, islandY, project, time, reducedMotion) {
 }
 
 // --- Specific Landmark 5: Contact Island ("CONTACTO" Lifeguard Shack, Mailbox & Message in a Bottle) ---
-function drawLandmarkContact(ctx, islandX, islandY, time, reducedMotion, style) {
+function drawLandmarkContact(ctx, islandX, islandY, time, reducedMotion, style, state) {
   ctx.save();
   ctx.translate(islandX, islandY);
 
@@ -1622,7 +1796,7 @@ function drawLandmarkContact(ctx, islandX, islandY, time, reducedMotion, style) 
   ctx.save();
   const signY = roofTopY - 24;
   const titleText = 'CONTACTO';
-  ctx.font = '900 12px system-ui, sans-serif';
+  ctx.font = resolveSceneFont('900 12px system-ui, sans-serif', style);
   const textMetrics = ctx.measureText(titleText);
   const textW = textMetrics.width;
 
@@ -1685,7 +1859,7 @@ function drawLandmarkContact(ctx, islandX, islandY, time, reducedMotion, style) 
     ctx.shadowBlur = reducedMotion ? 4 : 8 + Math.sin(time * 4) * 3;
   }
   const maxTitleW = (signLeft + signW - 8) - textX;
-  ctx.fillText(titleText, textX, signY, maxTitleW);
+  drawSceneText(ctx, state, titleText, textX, signY, maxTitleW);
   ctx.restore();
 
   ctx.restore();
@@ -1698,7 +1872,7 @@ function drawLandmarkContact(ctx, islandX, islandY, time, reducedMotion, style) 
 }
 
 // --- Layer 8: Prominent Legible Dock Signboard (Always facing front, never inverted) ---
-function drawDockSignboard(ctx, islandX, islandY, project, isSelected, isHovered, style, time, reducedMotion) {
+function drawDockSignboard(ctx, islandX, islandY, project, isSelected, isHovered, style, time, reducedMotion, state) {
   ctx.save();
   ctx.translate(islandX, islandY);
 
@@ -1779,14 +1953,14 @@ function drawDockSignboard(ctx, islandX, islandY, project, isSelected, isHovered
   ctx.textBaseline = 'middle';
 
   // Category Tag
-  ctx.font = 'bold 8.5px system-ui, -apple-system, sans-serif';
+  ctx.font = resolveSceneFont('bold 8.5px system-ui, -apple-system, sans-serif', style);
   ctx.fillStyle = isHovered ? '#ffe49e' : isSelected ? PALETTE.neonTeal : '#94a3b8';
-  ctx.fillText(projectKind, signX, signY - 7, signW - 14);
+  drawSceneText(ctx, state, projectKind, signX, signY - 7, signW - 14);
 
   // Main Title: blanco puro de alto contraste, legible en todo momento
-  ctx.font = 'bold 12px system-ui, -apple-system, sans-serif';
+  ctx.font = resolveSceneFont('bold 12px system-ui, -apple-system, sans-serif', style);
   ctx.fillStyle = '#ffffff';
-  ctx.fillText(projectTitle, signX, signY + 6, signW - 14);
+  drawSceneText(ctx, state, projectTitle, signX, signY + 6, signW - 14);
 
   // --- Burbuja de acción en hover: ~18px lógicos en negrita, alto contraste, nítida en 2D y Pixel ---
   if (isHovered) {
@@ -1794,7 +1968,7 @@ function drawDockSignboard(ctx, islandX, islandY, project, isSelected, isHovered
     const bob = (reducedMotion || style === 'pixel') ? 0 : Math.sin(time * 4) * 2;
 
     ctx.save();
-    ctx.font = 'bold 18px system-ui, -apple-system, sans-serif';
+    ctx.font = resolveSceneFont('bold 18px system-ui, -apple-system, sans-serif', style);
     const labelMetrics = ctx.measureText(bubbleLabel);
     const labelW = labelMetrics.width;
 
@@ -1852,11 +2026,11 @@ function drawDockSignboard(ctx, islandX, islandY, project, isSelected, isHovered
     // Texto de la burbuja: 18px en negrita, blanco puro
     ctx.shadowColor = 'transparent';
     ctx.shadowBlur = 0;
-    ctx.font = 'bold 18px system-ui, -apple-system, sans-serif';
+    ctx.font = resolveSceneFont('bold 18px system-ui, -apple-system, sans-serif', style);
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(bubbleLabel, bubbleCenterX, bubbleCenterY + 1, bubbleW - 12);
+    drawSceneText(ctx, state, bubbleLabel, bubbleCenterX, bubbleCenterY + 1, bubbleW - 12);
 
     ctx.restore();
   }
@@ -2203,20 +2377,20 @@ export function renderScene(ctx, state) {
     if (kind === 'home') {
       drawLandmarkHome(ctx, islandX, islandY, time, reducedMotion);
     } else if (kind === 'agenda') {
-      drawLandmarkAgenda(ctx, islandX, islandY, time, reducedMotion);
+      drawLandmarkAgenda(ctx, islandX, islandY, time, reducedMotion, state);
     } else if (kind === 'copa') {
-      drawLandmarkCopa(ctx, islandX, islandY, time, reducedMotion);
+      drawLandmarkCopa(ctx, islandX, islandY, time, reducedMotion, state);
     } else if (kind === 'contact') {
-      drawLandmarkContact(ctx, islandX, islandY, time, reducedMotion, style);
+      drawLandmarkContact(ctx, islandX, islandY, time, reducedMotion, style, state);
     } else {
-      drawLandmarkCode(ctx, islandX, islandY, project, time, reducedMotion);
+      drawLandmarkCode(ctx, islandX, islandY, project, time, reducedMotion, state);
     }
 
     // Draw dock/pier connecting island to boat
     drawPier(ctx, islandX, islandY, time, reducedMotion);
 
     // Draw legible dock signboard (never inverted, always front-facing)
-    drawDockSignboard(ctx, islandX, islandY, project, isSelected, isHovered, style, time, reducedMotion);
+    drawDockSignboard(ctx, islandX, islandY, project, isSelected, isHovered, style, time, reducedMotion, state);
   }
 
   // 6. Offshore Performance Speedboat (Proa Afilada Blanca Coral)

@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types -- props del contrato del renderer, validados por uso interno */
 import { useEffect, useRef } from 'react';
-import { renderScene } from './sceneRenderer.js';
+import { renderScene, replayTextQueue } from './sceneRenderer.js';
 
 const W = 1280;
 const H = 720;
@@ -177,7 +177,7 @@ export default function IslandScene({
       }
     };
 
-    const drawScene = (target, state, current) => {
+    const drawScene = (target, state, current, textQueue) => {
       const { scale, offsetX, offsetY } = getSceneTransform(target.canvas.width, target.canvas.height);
 
       target.setTransform(1, 0, 0, 1, 0, 0);
@@ -199,6 +199,7 @@ export default function IslandScene({
         selectedIndex: state.selectedIndex,
         style: current.style,
         hoveredIndex: state.hoveredIndex,
+        textQueue,
       });
       target.restore();
     };
@@ -290,12 +291,19 @@ export default function IslandScene({
           buffer.width = pixelW;
           buffer.height = PIXEL_H;
         }
-        drawScene(bufferCtx, state, current);
+        const textQueue = [];
+        drawScene(bufferCtx, state, current, textQueue);
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.imageSmoothingEnabled = false;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(buffer, 0, 0, canvas.width, canvas.height);
         ctx.imageSmoothingEnabled = true;
+
+        if (textQueue.length > 0) {
+          const scaleX = canvas.width / buffer.width;
+          const scaleY = canvas.height / buffer.height;
+          replayTextQueue(ctx, textQueue, scaleX, scaleY);
+        }
       } else {
         drawScene(ctx, state, current);
       }
